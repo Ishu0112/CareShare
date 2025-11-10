@@ -1,20 +1,24 @@
-![Skill Swap222](https://github.com/Wellitsabhi/CareShare/assets/63799853/9e597edd-7a40-4a03-b7d8-0cdeaf1b792f)
+![CareShare](https://github.com/Wellitsabhi/CareShare/assets/63799853/9e597edd-7a40-4a03-b7d8-0cdeaf1b792f)
 
-[Skill Swap↗️](https://SkillSwap-seven.vercel.app/) is an innovative platform where users can register, list their skills and interests, and find others on the platform to teach and learn from each other. It's a community-driven skill exchange network designed to foster collaborative learning and personal growth.
+# CareShare 
+
 
 ## Table of Contents
 
-- [Skill Swap](#skill-swap)
+- [CareShare (Skill Swap)](#careshare-skill-swap)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
   - [Usage](#usage)
     - [Register](#register)
     - [Profile Setup](#profile-setup)
     - [Finding a Match](#finding-a-match)
-    - [Skill Exchange](#skill-exchange)
+    - [Real-Time Chat](#real-time-chat)
+    - [Skill Videos & Tokens](#skill-videos--tokens)
   - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
+  - [Tech Stack](#tech-stack)
+  - [Project Structure](#project-structure)
   - [Contributing](#contributing)
   - [Future Plans](#future-plans)
   - [Contributors](#contributors)
@@ -23,33 +27,55 @@
 
 ## Features
 
-- **User Registration**: Easy signup process to create an account.
-- **Profile Setup**: Users can list their skills and interests.
-- **Matchmaking**: Find users with complementary skills.
-- **Skill Exchange**: Connect with others to teach and learn new skills.
+- **User Registration**: Easy signup process to create an account
+- **Profile Setup**: Users can list their skills and interests
+- **Matchmaking**: Swipe-based interface to find users with complementary skills
+- **Real-Time Chat**: Live messaging with matched users using Socket.IO
+- **Skill Videos**: Upload and share skill demonstration videos
+- **Token System**: Earn tokens when others watch your videos, spend tokens to watch others
+- **Notifications**: Stay updated with match requests and activity
+- **Dark Mode**: Toggle between light and dark themes
 
 ## Usage
 
 ### Register
 
-1. Open the app and click on the 'Get started' button.
-2. Fill in the required details and create your account.
+1. Open the app and click on the 'Get started' button
+2. Fill in the required details (first name, last name, email, password)
+3. Create your account
 
 ### Profile Setup
 
-1. After registration, log in to your account.
-2. Navigate to the 'Profile' section.
-3. Add your skills and interests to your profile.
+1. After registration, log in to your account
+2. Navigate to the 'Profile' section
+3. Add your skills (what you can teach others)
+4. Add your interests (what you want to learn)
+5. Upload skill demonstration videos (optional)
+6. Write a bio to introduce yourself
 
 ### Finding a Match
 
-1. Use the `swipe` functionality to find users with the skills you're interested in.
-2. Browse profiles and send connection requests to potential matches.
+1. Navigate to the 'Swipe' section
+2. Browse through user profiles with complementary skills
+3. Swipe right to send a match request
+4. Swipe left to skip
+5. When both users match, you'll be notified
 
-### Skill Exchange
+### Real-Time Chat
 
-1. Once connected, you can find contact info in `matches` section, arrange a skill exchange session.
-2. Give feedback to us after the session to help improve the community.
+1. Go to 'Matches' section to see all your matched users
+2. Click the 💬 Chat button next to any match
+3. Start a real-time conversation
+4. Messages appear instantly with typing indicators
+5. Access all your conversations from the 'Chats' section in the navbar
+
+### Skill Videos & Tokens
+
+1. Upload skill videos from your Profile page
+2. Users start with 100 tokens
+3. Spend 5 tokens to watch someone's skill video
+4. Earn 5 tokens when someone watches your video
+5. View your token balance in the navbar (🪙 icon)
 
 ## Getting Started
 
@@ -57,83 +83,171 @@
 
 Before you begin, ensure you have met the following requirements:
 
-- Node.js (v20.0+)
-- Express.js (v4.19.2+)
-- React.js (v18.2.0+)
-- MongoDB Atlas
+- **Node.js** (v20.0+)
+- **npm** or **yarn** package manager
+- **MongoDB Atlas** account (for database)
+- **Git** for version control
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository:**
+
    ```bash
-   git clone https://github.com/Wellitsabhi/SkillSwap
+   git clone https://github.com/Ishu0112/CareShare.git
+   cd CareShare
    ```
-2. Navigate to the project directory:
+
+2. **Install Backend Dependencies:**
+
    ```bash
-   cd SkillSwap
-   ```
-3. Install dependencies:
-   ```bash
+   cd backend
    npm install
    ```
-4. Set up environment variables:
-   Create two `.env` files (seperate for backend and frontend) and add the following variables-
-   Backend env :
 
-   ```plaintext
-    DATABASE_USERNAME=your_mongodb_database_username
-    DB_PASSWORD=your_mongodb_database_username
-    SECRET_KEY=your_secret_key
-    PORT=3000
-    FRONTEND_URL=http://localhost
-   ```
+3. **Install Frontend Dependencies:**
 
-   Frontend env :
-
-   ```plaintext
-    VITE_BACKEND_URL=http://localhost:3000/
-   ```
-
-5. Start the application:
    ```bash
+   cd ../frontend
+   npm install
+   ```
+
+4. **Set up environment variables:**
+
+   Create `.env` file in **backend** folder:
+
+   ```plaintext
+   DATABASE_USERNAME=your_mongodb_username
+   DB_PASSWORD=your_mongodb_password
+   SECRET_KEY=your_jwt_secret_key
+   PORT=3000
+   FRONTEND_URL=http://localhost:5173
+   ```
+
+   Create `.env` file in **frontend** folder:
+
+   ```plaintext
+   VITE_BACKEND_URL=http://localhost:3000/
+   ```
+
+5. **Start the Backend Server:**
+
+   ```bash
+   cd backend
+   npm start
+   ```
+
+   Backend will run on `http://localhost:3000`
+
+6. **Start the Frontend Development Server:**
+
+   ```bash
+   cd frontend
    npm run dev
    ```
 
-The app should now be running on `http://localhost:5173`.
+   Frontend will run on `http://localhost:5173`
 
-## Contributing
+7. **Open your browser and visit:**
+   ```
+   http://localhost:5173
+   ```
 
-We welcome contributions! Please follow these steps to contribute:
+## Tech Stack
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Make your changes.
-4. Commit your changes (`git commit -m 'Add some feature'`).
-5. Push to the branch (`git push origin feature-branch`).
-6. Open a Pull Request.
+### Frontend
+
+- **React.js** (v18.2.0+) - UI Library
+- **Vite** - Build tool and dev server
+- **React Router** - Client-side routing
+- **Axios** - HTTP client
+- **Socket.IO Client** - Real-time communication
+- **Tailwind CSS** - Utility-first CSS framework
+
+### Backend
+
+- **Node.js** - Runtime environment
+- **Express.js** (v4.19.2+) - Web framework
+- **MongoDB** with **Mongoose** - Database
+- **Socket.IO** - Real-time bidirectional communication
+- **JWT** - Authentication
+- **bcrypt** - Password hashing
+- **cookie-parser** - Cookie handling
+
+## Project Structure
+
+```
+CareShare/
+├── backend/
+│   ├── config/
+│   │   └── db.js                 # Database connection
+│   ├── controllers/
+│   │   ├── adminController.js
+│   │   ├── chatController.js     # Chat functionality
+│   │   ├── homeController.js
+│   │   ├── swipeController.js
+│   │   └── userController.js     # User + Token + Video functions
+│   ├── middlewares/
+│   │   └── authCheck.js          # JWT authentication
+│   ├── models/
+│   │   ├── chatModel.js          # Chat & Message schema
+│   │   ├── skillModel.js
+│   │   └── userModel.js
+│   ├── routes/
+│   │   ├── adminRouter.js
+│   │   ├── chatRouter.js         # Chat endpoints
+│   │   ├── homeRouter.js
+│   │   ├── swipeRouter.js
+│   │   └── userRouter.js
+│   ├── utils/
+│   │   ├── tokenizer.js          # JWT creation
+│   │   └── detokenizer.js        # JWT verification
+│   ├── app.js                    # Main server + Socket.IO
+│   └── package.json
+│
+├── frontend/
+│   ├── src/
+│   │   ├── assets/               # Images and icons
+│   │   ├── components/
+│   │   │   ├── Chat/
+│   │   │   │   ├── ChatBox.jsx   # Individual chat interface
+│   │   │   │   └── ChatList.jsx  # All conversations
+│   │   │   ├── Home/
+│   │   │   ├── Swipe/
+│   │   │   ├── User/
+│   │   │   │   ├── Login.jsx
+│   │   │   │   ├── Register.jsx
+│   │   │   │   ├── Profile/
+│   │   │   │   ├── ProfileUpdate/
+│   │   │   │   └── Matches/
+│   │   │   └── utils/
+│   │   │       ├── Navbar/
+│   │   │       ├── SocketProvider.jsx  # Socket.IO context
+│   │   │       ├── UserProvider.jsx    # User context
+│   │   │       └── ViewProfile/
+│   │   ├── App.jsx
+│   │   ├── main.jsx              # Routes configuration
+│   │   └── index.css
+│   ├── package.json
+│   └── vite.config.js
+│
+├── CHAT_FEATURE_IMPLEMENTATION.md
+├── SOCKET_FIX_GUIDE.md
+└── README.md
+```
+
+
 
 ## Future Plans
 
-- **Messaging**: In-app messaging to communicate with matches.
-- **Mobile App**: Develop a mobile application for iOS and Android.
-- **Group Skill Swaps**: Allow users to join group sessions for skill exchanges.
-- **Video Tutorials**: Integrate video tutorials for popular skills.
-- **Gamification**: Introduce badges and rewards to motivate users.
-- **Advanced Matchmaking**: Implement AI-based matchmaking to find the best skill exchange partners.
 
-## Contributors
+- **Mobile App**: Develop a mobile application for iOS and Android
+- **Group Skill Swaps**: Allow users to join group sessions for skill exchanges
+- **Video Call Integration**: Direct video calls between matched users
+- **Gamification**: Introduce badges and rewards to motivate users
+- **Advanced Matchmaking**: Implement AI-based matchmaking for better skill pairings
+- **File Sharing**: Share documents and images in chat
+- **Search Functionality**: Search through chat history and users
+---
 
-- **Himanshu Lilhore** - [GitHub](https://github.com/Himanshu-Lilhore) | [Twitter](https://x.com/HimanshuLilhore)
-- **Abhishek Singh** - [GitHub](https://github.com/Wellitsabhi) | [Twitter](https://x.com/wellitsabhi)
-- **Khushi** - [GitHub](https://github.com/KodaKodama) | [Twitter](https://x.com/DevQueen146223)
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-If you have any questions or suggestions, feel free to reach out to us:
-
-- Email: SkillSwap.in@gmail.com
-- GitHub Issues: [https://github.com/Wellitsabhi/SkillSwap/issues](https://github.com/Wellitsabhi/SkillSwap/issues)
+**Made by the CareShare Team**
