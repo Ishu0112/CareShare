@@ -148,6 +148,12 @@ const Navbar = ({ isDark, setIsDark }) => {
 
             {isLoggedIn && (
               <li>
+                <NavLink to="/user/skill-tests">Tests</NavLink>
+              </li>
+            )}
+
+            {isLoggedIn && (
+              <li>
                 <NavLink to="/user/profile">User</NavLink>
               </li>
             )}

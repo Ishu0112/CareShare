@@ -15,6 +15,9 @@ import ViewProfile from "./components/utils/ViewProfile/ViewProfile.jsx";
 import Swipe from "./components/Swipe/Swipe.jsx";
 import ChatBox from "./components/Chat/ChatBox.jsx";
 import ChatList from "./components/Chat/ChatList.jsx";
+import SkillTests from "./components/User/SkillTests/SkillTests.jsx";
+import TestChallenge from "./components/User/SkillTests/TestChallenge.jsx";
+import TestResults from "./components/User/SkillTests/TestResults.jsx";
 import Axios from "axios";
 
 Axios.defaults.withCredentials = true;
@@ -55,6 +58,18 @@ const router = createBrowserRouter([
           {
             path: "/user/chats",
             element: <ChatList />,
+          },
+          {
+            path: "/user/skill-tests",
+            element: <SkillTests />,
+          },
+          {
+            path: "/user/skill-tests/challenge/:skill",
+            element: <TestChallenge />,
+          },
+          {
+            path: "/user/skill-tests/results",
+            element: <TestResults />,
           },
         ],
       },

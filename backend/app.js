@@ -11,6 +11,7 @@ const adminRouter = require("./routes/adminRouter");
 const swipeRouter = require("./routes/swipeRouter");
 const utilRouter = require("./routes/utilRouter");
 const chatRouter = require("./routes/chatRouter");
+const testRouter = require("./routes/testRouter");
 const cookieParser = require("cookie-parser");
 const PORT = process.env.PORT;
 const cors = require("cors");
@@ -100,6 +101,8 @@ app.use("/swipe", swipeRouter);
 app.use("/admin", adminRouter); // For testing purposes  // can make a admin dashboard in future
 
 app.use("/chat", chatRouter);
+
+app.use("/tests", testRouter);
 
 app.use("/", utilRouter);
 

@@ -77,7 +77,36 @@ const userSchema = new mongoose.Schema({
             }
         }],
         default: new Map()
-    }
+    },
+    skillTests: [{
+        skill: {
+            type: String,
+            required: true
+        },
+        score: {
+            type: Number,
+            required: true
+        },
+        totalQuestions: {
+            type: Number,
+            required: true
+        },
+        timeTaken: {
+            type: Number, // in seconds
+            required: true
+        },
+        passed: {
+            type: Boolean,
+            required: true
+        },
+        certificateId: {
+            type: String
+        },
+        completedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 }, {timestamps: true})
 
 const User = mongoose.model('User', userSchema)
