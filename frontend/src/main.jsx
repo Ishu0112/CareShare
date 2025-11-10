@@ -9,13 +9,14 @@ import Home from "./components/Home/Home.jsx";
 import User from "./components/User/User.jsx";
 import Profile from "./components/User/Profile/Profile.jsx";
 import Matches from "./components/User/Matches/Matches.jsx";
-import ProfileUpdate from "./components/User/ProfileUpdate/ProfileUpdate.jsx"
+import ProfileUpdate from "./components/User/ProfileUpdate/ProfileUpdate.jsx";
 import ViewProfile from "./components/utils/ViewProfile/ViewProfile.jsx";
 import Swipe from "./components/Swipe/Swipe.jsx";
-import Axios from 'axios';
+import ChatBox from "./components/Chat/ChatBox.jsx";
+import ChatList from "./components/Chat/ChatList.jsx";
+import Axios from "axios";
 
 Axios.defaults.withCredentials = true;
-
 
 const router = createBrowserRouter([
   {
@@ -45,8 +46,12 @@ const router = createBrowserRouter([
           {
             path: "/user/matches",
             element: <Matches />,
-          }
-        ]
+          },
+          {
+            path: "/user/chats",
+            element: <ChatList />,
+          },
+        ],
       },
       {
         path: "/home",
@@ -58,12 +63,16 @@ const router = createBrowserRouter([
       },
       {
         path: "/swipe",
-        element: <Swipe />
+        element: <Swipe />,
+      },
+      {
+        path: "/chat/:userId",
+        element: <ChatBox />,
       },
       {
         path: "/:username",
         element: <ViewProfile />,
-      }
+      },
     ],
   },
 ]);
