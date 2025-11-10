@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Navbar from "./components/utils/Navbar/Navbar.jsx";
 import Footer from "./components/utils/Footer.jsx";
+import AiChatbot from "./components/utils/AiChatbot/AiChatbot.jsx";
 import "./App.css";
 import { UserProvider } from "./components/utils/UserProvider.jsx";
 import { SocketProvider } from "./components/utils/SocketProvider.jsx";
@@ -40,6 +41,9 @@ export default function App() {
                   </div>
 
                   <Footer />
+
+                  {/* AI Helper Chatbot - Available on all pages */}
+                  <AiChatbot />
                 </div>
               </div>
             </SocketProvider>
