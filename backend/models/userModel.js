@@ -58,6 +58,25 @@ const userSchema = new mongoose.Schema({
     tokens: {
         type: Number,
         default: 100
+    },
+    videoRatings: {
+        type: Map,
+        of: [{
+            userId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            },
+            rating: {
+                type: Number,
+                min: 1,
+                max: 5
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now
+            }
+        }],
+        default: new Map()
     }
 }, {timestamps: true})
 

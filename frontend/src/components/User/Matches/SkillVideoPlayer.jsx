@@ -1,13 +1,56 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Axios from 'axios';
 import { useAlert } from '../../utils/AlertProvider';
+import { useUser } from '../../utils/UserProvider';
+import VideoRating from './VideoRating';
 
 const SkillVideoPlayer = ({ skill, videoUrl, videoOwnerUsername }) => {
     const [hasWatched, setHasWatched] = useState(false);
     const [isLocked, setIsLocked] = useState(false);
     const [showVideo, setShowVideo] = useState(false);
+    const [averageRating, setAverageRating] = useState(0);
+    const [totalRatings, setTotalRatings] = useState(0);
+    const [userRating, setUserRating] = useState(0);
     const videoRef = useRef(null);
     const { setAlert } = useAlert();
+    const { userData } = useUser();
+
+    // Fetch existing ratings when component mounts
+    useEffect(() => {
+        if (videoOwnerUsername) {
+            fetchRatings();
+        }
+    }, [videoOwnerUsername, skill]);
+
+    const fetchRatings = async () => {
+        try {
+            const response = await Axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}user/video-ratings/${videoOwnerUsername}/${skill}`
+            );
+            
+            if (response.status === 200) {
+                setAverageRating(response.data.averageRating);
+                setTotalRatings(response.data.totalRatings);
+                
+                // Find current user's rating if exists
+                const currentUsername = userData?.username;
+                if (currentUsername) {
+                    const myRating = response.data.ratings.find(r => r.username === currentUsername);
+                    if (myRating) {
+                        setUserRating(myRating.rating);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching ratings:', error);
+        }
+    };
+
+    const handleRatingUpdate = (newAverage, newTotal, newUserRating) => {
+        setAverageRating(newAverage);
+        setTotalRatings(newTotal);
+        setUserRating(newUserRating);
+    };
 
     // Function to extract YouTube video ID
     const getYouTubeId = (url) => {
@@ -207,17 +250,43 @@ const SkillVideoPlayer = ({ skill, videoUrl, videoOwnerUsername }) => {
                 <span className="inline-block px-3 py-1 text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
                     {skill}
                 </span>
-                {hasWatched && (
-                    <span className="text-xs text-green-600 dark:text-green-400 font-semibold">
-                        ✓ Watched
-                    </span>
-                )}
+                <div className="flex items-center gap-3">
+                    {/* Average Rating Display */}
+                    {videoOwnerUsername && totalRatings > 0 && (
+                        <div className="flex items-center gap-1">
+                            <svg className="w-5 h-5 fill-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                            </svg>
+                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                {averageRating} ({totalRatings})
+                            </span>
+                        </div>
+                    )}
+                    {hasWatched && (
+                        <span className="text-xs text-green-600 dark:text-green-400 font-semibold">
+                            ✓ Watched
+                        </span>
+                    )}
+                </div>
             </div>
             {renderVideo()}
+            
             {!isLocked && !hasWatched && videoOwnerUsername && !showVideo && (
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                     💡 Click the video to watch. {videoOwnerUsername} will earn 5 tokens.
                 </p>
+            )}
+            
+            {/* Rating Component - Show for matched users (regardless of watch status) */}
+            {videoOwnerUsername && (
+                <div className="mt-4 pt-4 border-t border-gray-300 dark:border-gray-600">
+                    <VideoRating
+                        skill={skill}
+                        videoOwnerUsername={videoOwnerUsername}
+                        currentUserRating={userRating}
+                        onRatingUpdate={handleRatingUpdate}
+                    />
+                </div>
             )}
         </div>
     );

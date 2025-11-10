@@ -541,6 +541,185 @@ const getTokenBalance = async (req, res) => {
   }
 };
 
+// Rate a video
+const rateVideo = async (req, res) => {
+  try {
+    // req.user is set by authCheck middleware
+    const { videoOwnerUsername, skill, rating } = req.body;
+    const raterId = req.user._id;
+    const raterUsername = req.user.username;
+
+    console.log("Rating request received:", { videoOwnerUsername, skill, rating, raterUsername });
+
+    // Validate rating
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: "Rating must be between 1 and 5" });
+    }
+
+    // Get the video owner
+    const videoOwner = await User.findOne({ username: videoOwnerUsername });
+
+    console.log("Video owner found:", videoOwner ? videoOwner.username : "NOT FOUND");
+
+    if (!videoOwner) {
+      return res.status(404).json({ message: "Video owner not found" });
+    }
+
+    // Check if users are matched
+    const areMatched = req.user.matches.some(matchId => matchId.equals(videoOwner._id));
+    console.log("Are users matched?", areMatched);
+    
+    if (!areMatched) {
+      return res.status(403).json({ message: "You can only rate videos of matched users" });
+    }
+
+    // Check if video exists for the skill
+    if (!videoOwner.skillVideos || !videoOwner.skillVideos.get(skill)) {
+      console.log("Video not found for skill:", skill);
+      return res.status(404).json({ message: "Video not found for this skill" });
+    }
+
+    console.log("Video exists for skill:", skill);
+
+    // Initialize videoRatings if not exists
+    if (!videoOwner.videoRatings) {
+      videoOwner.videoRatings = new Map();
+    }
+
+    // Get existing ratings for this skill
+    let skillRatings = videoOwner.videoRatings.get(skill) || [];
+    console.log("Existing ratings for this skill:", skillRatings.length);
+
+    // Check if user already rated this video
+    const existingRatingIndex = skillRatings.findIndex(
+      r => r.userId.equals(raterId)
+    );
+
+    if (existingRatingIndex !== -1) {
+      // Update existing rating
+      console.log("Updating existing rating from", skillRatings[existingRatingIndex].rating, "to", rating);
+      skillRatings[existingRatingIndex].rating = rating;
+      skillRatings[existingRatingIndex].createdAt = new Date();
+    } else {
+      // Add new rating
+      console.log("Adding new rating:", rating);
+      skillRatings.push({
+        userId: raterId,
+        rating: rating,
+        createdAt: new Date()
+      });
+    }
+
+    // Update the map
+    videoOwner.videoRatings.set(skill, skillRatings);
+    videoOwner.markModified('videoRatings');
+    await videoOwner.save();
+
+    console.log("Rating saved successfully");
+
+    // Calculate average rating for this skill
+    const totalRatings = skillRatings.reduce((sum, r) => sum + r.rating, 0);
+    const averageRating = (totalRatings / skillRatings.length).toFixed(1);
+
+    console.log("Average rating:", averageRating, "Total ratings:", skillRatings.length);
+
+    // Add notification to video owner
+    videoOwner.notifications.push(
+      `${raterUsername} rated your ${skill} video: ${rating} stars`
+    );
+    await videoOwner.save();
+
+    return res.status(200).json({
+      message: "Rating submitted successfully",
+      averageRating: parseFloat(averageRating),
+      totalRatings: skillRatings.length
+    });
+  } catch (error) {
+    console.error("Error rating video:", error);
+    return res.status(500).json({ message: "Failed to rate video", error: error.message });
+  }
+};
+
+// Get video ratings
+const getVideoRatings = async (req, res) => {
+  try {
+    const { username, skill } = req.params;
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const skillRatings = user.videoRatings?.get(skill) || [];
+
+    if (skillRatings.length === 0) {
+      return res.status(200).json({
+        averageRating: 0,
+        totalRatings: 0,
+        ratings: []
+      });
+    }
+
+    // Calculate average
+    const totalRatings = skillRatings.reduce((sum, r) => sum + r.rating, 0);
+    const averageRating = (totalRatings / skillRatings.length).toFixed(1);
+
+    // Populate user info for ratings
+    const ratingsWithUsers = await Promise.all(
+      skillRatings.map(async (r) => {
+        const raterUser = await User.findById(r.userId).select('username fname lname');
+        return {
+          username: raterUser?.username,
+          fname: raterUser?.fname,
+          lname: raterUser?.lname,
+          rating: r.rating,
+          createdAt: r.createdAt
+        };
+      })
+    );
+
+    return res.status(200).json({
+      averageRating: parseFloat(averageRating),
+      totalRatings: skillRatings.length,
+      ratings: ratingsWithUsers
+    });
+  } catch (error) {
+    console.error("Error fetching ratings:", error);
+    return res.status(500).json({ message: "Failed to fetch ratings" });
+  }
+};
+
+// Get all video ratings for a user (for their profile)
+const getAllVideoRatings = async (req, res) => {
+  try {
+    // req.user is set by authCheck middleware
+    const user = req.user;
+
+    if (!user || !user.videoRatings) {
+      return res.status(200).json({});
+    }
+
+    const ratingsData = {};
+    
+    for (const [skill, ratings] of user.videoRatings.entries()) {
+      if (ratings.length > 0) {
+        const totalRatings = ratings.reduce((sum, r) => sum + r.rating, 0);
+        const averageRating = (totalRatings / ratings.length).toFixed(1);
+        
+        ratingsData[skill] = {
+          averageRating: parseFloat(averageRating),
+          totalRatings: ratings.length
+        };
+      }
+    }
+
+    return res.status(200).json(ratingsData);
+  } catch (error) {
+    console.error("Error fetching all ratings:", error);
+    return res.status(500).json({ message: "Failed to fetch ratings" });
+  }
+};
+
 module.exports = {
   registerUser,
   viewProfile,
@@ -556,4 +735,7 @@ module.exports = {
   uploadSkillVideo,
   watchVideo,
   getTokenBalance,
+  rateVideo,
+  getVideoRatings,
+  getAllVideoRatings,
 };
