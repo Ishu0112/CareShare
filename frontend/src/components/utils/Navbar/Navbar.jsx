@@ -21,18 +21,39 @@ const Navbar = ({ isDark, setIsDark }) => {
   const { alert, setAlert } = useAlert()
   const { setIsLoading } = useLoading()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [tokens, setTokens] = useState(0)
 
 
   useEffect(() => {
     async function check() {
       if (await checkToken()) {
         setIsLoggedIn(true)
+        // Fetch token balance
+        try {
+          const response = await Axios.get(`${import.meta.env.VITE_BACKEND_URL}user/tokens`)
+          if (response.status === 200) {
+            setTokens(response.data.tokens)
+          }
+        } catch (error) {
+          console.error('Error fetching tokens:', error)
+        }
       }
       else {
         setIsLoggedIn(false)
+        setTokens(0)
       }
     }
     check()
+
+    // Listen for token updates from video player
+    const handleTokenUpdate = () => {
+      check();
+    };
+    window.addEventListener('tokenUpdate', handleTokenUpdate);
+
+    return () => {
+      window.removeEventListener('tokenUpdate', handleTokenUpdate);
+    };
   }, [userData])
 
 
@@ -81,6 +102,15 @@ const Navbar = ({ isDark, setIsDark }) => {
             {isLoggedIn &&
               <li>
                 <Notification />
+              </li>
+            }
+
+            {isLoggedIn &&
+              <li>
+                <div className="flex items-center px-3 py-2 text-gray-900 dark:text-white bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                  <span className="text-xl mr-1">🪙</span>
+                  <span className="font-bold">{tokens}</span>
+                </div>
               </li>
             }
 

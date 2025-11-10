@@ -9,6 +9,7 @@ import Home from "./components/Home/Home.jsx";
 import User from "./components/User/User.jsx";
 import Profile from "./components/User/Profile/Profile.jsx";
 import Matches from "./components/User/Matches/Matches.jsx";
+import MatchDetail from "./components/User/Matches/MatchDetail.jsx";
 import ProfileUpdate from "./components/User/ProfileUpdate/ProfileUpdate.jsx"
 import ViewProfile from "./components/utils/ViewProfile/ViewProfile.jsx";
 import Swipe from "./components/Swipe/Swipe.jsx";
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
           {
             path: "/user/matches",
             element: <Matches />,
+          },
+          {
+            path: "/user/matches/:username",
+            element: <MatchDetail />,
           }
         ]
       },

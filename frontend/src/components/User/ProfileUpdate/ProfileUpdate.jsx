@@ -8,16 +8,18 @@ import { useAlert } from '../../utils/AlertProvider'
 import SkillRowEdit from './SkillRowEdit'
 import PageHeading from '../../utils/PageHeading'
 import { useLoading } from '../../utils/LoadingProvider'
+import VideoUpload from '../Profile/VideoUpload'
 
 Axios.defaults.withCredentials = true
 
 export default function ProfileUpdate() {
     const { userData, setUserData } = useUser()
     const [preSaveUserData, setPreSaveUserData] = useState({ ...userData })
+    const [skillVideos, setSkillVideos] = useState({})
     const { alert, setAlert } = useAlert()
     const { setIsLoading } = useLoading()
     const navigate = useNavigate()
-    const fieldsNotToDisplay = ['notifications', 'matches']
+    const fieldsNotToDisplay = ['notifications', 'matches', 'skillVideos']
 
     useEffect(() => {
         const handleFetch = async () => {
@@ -35,6 +37,10 @@ export default function ProfileUpdate() {
                         ...userData,
                         ...response.data
                     })
+                    // Set skill videos if they exist
+                    if (response.data.skillVideos) {
+                        setSkillVideos(response.data.skillVideos)
+                    }
                 } else {
                     console.log('Fetch not working')
                 }
@@ -59,7 +65,20 @@ export default function ProfileUpdate() {
     useEffect(() => {
         console.log('Updated userData:', userData)
         setPreSaveUserData({ ...userData })
+        if (userData.skillVideos) {
+            setSkillVideos(userData.skillVideos)
+        }
     }, [userData])
+
+    const handleVideoUpdate = (skill, videoUrl) => {
+        const updatedVideos = { ...skillVideos }
+        if (videoUrl) {
+            updatedVideos[skill] = videoUrl
+        } else {
+            delete updatedVideos[skill]
+        }
+        setSkillVideos(updatedVideos)
+    }
 
 
     const handleClick = async () => {
@@ -124,6 +143,18 @@ export default function ProfileUpdate() {
 
                     </div>
                 </div>
+
+                {/* Video Upload Section */}
+                {userData.skills && userData.skills.length > 0 && (
+                    <VideoUpload 
+                        userSkills={userData.skills.map(skill => 
+                            typeof skill === 'object' ? skill.name : skill
+                        )}
+                        existingVideos={skillVideos}
+                        onVideoUpdate={handleVideoUpdate}
+                    />
+                )}
+
             </div>
         </div>
     )

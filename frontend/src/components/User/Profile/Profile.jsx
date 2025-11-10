@@ -8,6 +8,7 @@ import { useAlert } from '../../utils/AlertProvider'
 import SkillRow from './SkillRow'
 import PageHeading from '../../utils/PageHeading'
 import { useLoading } from '../../utils/LoadingProvider'
+import SkillVideoPlayer from '../Matches/SkillVideoPlayer'
 
 Axios.defaults.withCredentials = true
 
@@ -15,7 +16,7 @@ Axios.defaults.withCredentials = true
 export default function Profile() {
     const { userData, setUserData } = useUser()
     const navigate = useNavigate()
-    const fieldsNotToDisplay = ['notifications', 'matches']
+    const fieldsNotToDisplay = ['notifications', 'matches', 'skillVideos']
     const { alert, setAlert } = useAlert()
     const { isLoading, setIsLoading} = useLoading()
 
@@ -70,6 +71,8 @@ export default function Profile() {
         navigate('/user/profile-update')
     }
 
+    const hasVideos = userData.skillVideos && Object.keys(userData.skillVideos).length > 0;
+
     return (
         <div className="flex items-center justify-center w-full">
             
@@ -81,6 +84,19 @@ export default function Profile() {
                     <div className="flex flex-col items-center p-10">
 
                         <h1 className="text-right mb-1 text-xl font-bold text-blue-600 dark:text-blue-500 w-full">{`@ ${userData.username.toLowerCase()}`}</h1>
+
+                        {/* Token Balance Display */}
+                        {userData.tokens !== undefined && (
+                            <div className="w-full flex justify-end mb-3">
+                                <div className="flex items-center px-4 py-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                                    <span className="text-2xl mr-2">🪙</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-xs text-gray-600 dark:text-gray-300">Your Tokens</span>
+                                        <span className="text-xl font-bold text-gray-900 dark:text-white">{userData.tokens}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
 
                         <div className="flex flex-col justify-between items-center py-5 w-full">
@@ -99,6 +115,29 @@ export default function Profile() {
 
                     </div>
                 </div>
+
+                {/* User's Own Skill Videos */}
+                {hasVideos && (
+                    <div className="w-full max-w-lg border-2 border-purple-500 dark:border-purple-400 rounded-lg shadow bg-slate-200 dark:bg-gray-900 mb-5">
+                        <div className="p-10">
+                            <h2 className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-4">
+                                📹 Your Skill Videos
+                            </h2>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                These videos are visible to your matched users!
+                            </p>
+                            <div className="space-y-4">
+                                {Object.entries(userData.skillVideos).map(([skill, videoUrl]) => (
+                                    <SkillVideoPlayer
+                                        key={skill}
+                                        skill={skill}
+                                        videoUrl={videoUrl}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>

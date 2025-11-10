@@ -6,7 +6,7 @@ export default function UserListItem({user}) {
     const navigate = useNavigate()
 
     function handleClick() {
-        navigate(`/${user.username}`)
+        navigate(`/user/matches/${user.username}`)
     }
 
     return (

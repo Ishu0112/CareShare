@@ -36,7 +36,8 @@ const showProfileWithUsername = async (req, res) => {
             username: userExists.username,
             skills: userExists.skills,
             interests: userExists.interests,
-            bio: userExists.bio
+            bio: userExists.bio,
+            skillVideos: {}
         }
 
         if (req.cookies === undefined) {
@@ -68,7 +69,8 @@ const showProfileWithUsername = async (req, res) => {
         if (!isExternal && loggedinUserExists && loggedinUserExists.matches && loggedinUserExists.matches.includes(userExists._id)) {
             profile = {
                 ...profile,
-                email: userExists.email
+                email: userExists.email,
+                skillVideos: userExists.skillVideos ? Object.fromEntries(userExists.skillVideos) : {}
             };
         }
 
