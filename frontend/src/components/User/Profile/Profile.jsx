@@ -85,19 +85,6 @@ export default function Profile() {
 
                         <h1 className="text-right mb-1 text-xl font-bold text-blue-600 dark:text-blue-500 w-full">{`@ ${userData.username.toLowerCase()}`}</h1>
 
-                        {/* Token Balance Display */}
-                        {userData.tokens !== undefined && (
-                            <div className="w-full flex justify-end mb-3">
-                                <div className="flex items-center px-4 py-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
-                                    <span className="text-2xl mr-2">🪙</span>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs text-gray-600 dark:text-gray-300">Your Tokens</span>
-                                        <span className="text-xl font-bold text-gray-900 dark:text-white">{userData.tokens}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
 
                         <div className="flex flex-col justify-between items-center py-5 w-full">
                             {Object.keys(userData).map((myKey, itr) => {
@@ -111,7 +98,7 @@ export default function Profile() {
                             })}
                         </div>
 
-                        <button onClick={handleClick} className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-lg px-7 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>✏️ EDIT</button>
+                        <button onClick={handleClick} className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-lg px-7 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>EDIT</button>
 
                     </div>
                 </div>
@@ -121,7 +108,7 @@ export default function Profile() {
                     <div className="w-full max-w-lg border-2 border-purple-500 dark:border-purple-400 rounded-lg shadow bg-slate-200 dark:bg-gray-900 mb-5">
                         <div className="p-10">
                             <h2 className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-4">
-                                📹 Your Skill Videos
+                                Your Skill Videos
                             </h2>
                             <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                                 These videos are visible to your matched users!

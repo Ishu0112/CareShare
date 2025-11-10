@@ -76,7 +76,7 @@ const Navbar = ({ isDark, setIsDark }) => {
 
         { !(location.pathname === '/home' || location.pathname === '/') &&
           <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-            Skill<span className="text-blue-600 dark:text-blue-500">Swap</span>.
+            Care<span className="text-blue-600 dark:text-blue-500">Share</span>.
           </h1>
         }
 

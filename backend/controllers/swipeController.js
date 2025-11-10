@@ -61,24 +61,24 @@ const swipeAction = async (req, res) => {
                 currentUser.matchRequests = currentUser.matchRequests.filter(id => id !== swipedUser._id)
                 currentUser.matches.push(swipedUser._id)
                 swipedUser.matches.push(currentUser._id)
-                currentUser.notifications.push(`🎉 You matched with @ ${swipedUser.username} !!!`)
-                swipedUser.notifications.push(`🎉 You matched with @ ${currentUser.username} !!!`)
+                currentUser.notifications.push(`You matched with @ ${swipedUser.username}`)
+                swipedUser.notifications.push(`You matched with @ ${currentUser.username}`)
                 await currentUser.save()
                 await swipedUser.save()
                 console.log("User got a match !")
-                return res.status(200).json({ message: `🎉 It's a match with @ ${swipedUser.username} !!` })
+                return res.status(200).json({ message: `It's a match with @ ${swipedUser.username}!` })
             }
             swipedUser.matchRequests.push(currentUser._id)
             await swipedUser.save()
             console.log("User sent a match request !")
-            return res.status(200).json({ message: `➕ Match request sent to @ ${swipedUser.username} !` })
+            return res.status(200).json({ message: `Match request sent to @ ${swipedUser.username}!` })
         }
         // LEFT swipe
         else {
             currentUser.rejected.push(swipedUser._id)
             await currentUser.save()
             console.log("User rejected this pontential match !")
-            return res.status(200).json({ message: `🚫 User Rejected potential match @ ${swipedUser.username} !` })
+            return res.status(200).json({ message: `Rejected potential match @ ${swipedUser.username}` })
         }
 
     } catch (error) {

@@ -69,7 +69,7 @@ const MatchDetail = () => {
 
                         {matchData.email && (
                             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                                📧 {matchData.email}
+                                Email: {matchData.email}
                             </p>
                         )}
 
@@ -121,7 +121,7 @@ const MatchDetail = () => {
                     <div className="w-full border-2 border-purple-500 dark:border-purple-400 rounded-lg shadow bg-slate-200 dark:bg-gray-900 mb-5">
                         <div className="p-10">
                             <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-6">
-                                📹 Skill Showcase Videos
+                                Skill Showcase Videos
                             </h2>
                             <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
                                 Watch videos showcasing the skills {matchData.fname} is offering!

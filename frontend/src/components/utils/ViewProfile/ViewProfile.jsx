@@ -101,7 +101,7 @@ export default function ViewProfile({ children }) {
                     <div className="w-full max-w-lg border-2 border-purple-500 dark:border-purple-400 rounded-lg shadow bg-slate-200 dark:bg-gray-900 mb-5">
                         <div className="p-10">
                             <h2 className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-4">
-                                📹 Skill Videos
+                                Skill Videos
                             </h2>
                             <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                                 Videos showcasing skills they can teach you!
