@@ -28,12 +28,14 @@ const Navbar = ({ isDark, setIsDark }) => {
         setIsLoggedIn(true);
         // Fetch token balance
         try {
-          const response = await Axios.get(`${import.meta.env.VITE_BACKEND_URL}user/tokens`);
+          const response = await Axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}user/tokens`
+          );
           if (response.status === 200) {
             setTokens(response.data.tokens);
           }
         } catch (error) {
-          console.error('Error fetching tokens:', error);
+          console.error("Error fetching tokens:", error);
         }
       } else {
         setIsLoggedIn(false);
@@ -46,10 +48,10 @@ const Navbar = ({ isDark, setIsDark }) => {
     const handleTokenUpdate = () => {
       check();
     };
-    window.addEventListener('tokenUpdate', handleTokenUpdate);
+    window.addEventListener("tokenUpdate", handleTokenUpdate);
 
     return () => {
-      window.removeEventListener('tokenUpdate', handleTokenUpdate);
+      window.removeEventListener("tokenUpdate", handleTokenUpdate);
     };
   }, [userData]);
 

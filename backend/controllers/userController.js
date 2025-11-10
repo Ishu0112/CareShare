@@ -67,8 +67,10 @@ const login = async (req, res) => {
         matches: matchNames,
         bio: userExists.bio,
         notifications: userExists.notifications,
-        skillVideos: userExists.skillVideos ? Object.fromEntries(userExists.skillVideos) : {},
-        tokens: userExists.tokens || 100
+        skillVideos: userExists.skillVideos
+          ? Object.fromEntries(userExists.skillVideos)
+          : {},
+        tokens: userExists.tokens || 100,
       };
       return res.status(200).json(profile);
     } else {
@@ -115,11 +117,9 @@ const registerUser = async (req, res) => {
       res.status(200).json("User created !");
     } else {
       console.log("\nRejected user creation, input criteria not followed !\n");
-      return res
-        .status(401)
-        .send({
-          message: "Rejected user creation, input criteria not followed !",
-        });
+      return res.status(401).send({
+        message: "Rejected user creation, input criteria not followed !",
+      });
     }
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -168,8 +168,10 @@ const viewProfile = async (req, res) => {
       matches: matchNames,
       bio: thisUser.bio,
       notifications: thisUser.notifications,
-      skillVideos: thisUser.skillVideos ? Object.fromEntries(thisUser.skillVideos) : {},
-      tokens: thisUser.tokens || 100
+      skillVideos: thisUser.skillVideos
+        ? Object.fromEntries(thisUser.skillVideos)
+        : {},
+      tokens: thisUser.tokens || 100,
     };
     res.status(200).json(profile);
   } catch (err) {
@@ -191,7 +193,9 @@ const getMatches = async (req, res) => {
         _id: match._id, // Added: Include user ID for chat functionality
         name: `${match.fname} ${match.lname}`,
         username: match.username,
-        skillVideos: match.skillVideos ? Object.fromEntries(match.skillVideos) : {}
+        skillVideos: match.skillVideos
+          ? Object.fromEntries(match.skillVideos)
+          : {},
       };
     });
     console.log(matches);
@@ -218,11 +222,9 @@ const editUserProfile = async (req, res) => {
     }
 
     if (username.length > 15 || username < 4) {
-      return res
-        .status(400)
-        .json({
-          message: "Username should be between 3 and 15 characters in length",
-        });
+      return res.status(400).json({
+        message: "Username should be between 3 and 15 characters in length",
+      });
     }
 
     const existingUser = await User.findOne({
@@ -294,12 +296,10 @@ const updateUserSkills = async (req, res) => {
       $addToSet: { skills: existingSkillIds },
     });
 
-    return res
-      .status(200)
-      .send({
-        success: true,
-        message: "Skills and interests updated successfully.",
-      });
+    return res.status(200).send({
+      success: true,
+      message: "Skills and interests updated successfully.",
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).send(error);
@@ -379,12 +379,14 @@ const saveSkillVideoUrl = async (req, res) => {
     const { skill, videoUrl } = req.body;
 
     if (!skill || !videoUrl) {
-      return res.status(400).json({ message: 'Skill and video URL are required' });
+      return res
+        .status(400)
+        .json({ message: "Skill and video URL are required" });
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Initialize skillVideos if it doesn't exist
@@ -396,13 +398,13 @@ const saveSkillVideoUrl = async (req, res) => {
     user.skillVideos.set(skill, videoUrl);
     await user.save();
 
-    return res.status(200).json({ 
-      message: 'Video URL saved successfully',
-      videoUrl: videoUrl
+    return res.status(200).json({
+      message: "Video URL saved successfully",
+      videoUrl: videoUrl,
     });
   } catch (error) {
-    console.error('Error saving video URL:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error("Error saving video URL:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -413,12 +415,12 @@ const deleteSkillVideo = async (req, res) => {
     const { skill } = req.body;
 
     if (!skill) {
-      return res.status(400).json({ message: 'Skill is required' });
+      return res.status(400).json({ message: "Skill is required" });
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     if (user.skillVideos && user.skillVideos.has(skill)) {
@@ -426,10 +428,10 @@ const deleteSkillVideo = async (req, res) => {
       await user.save();
     }
 
-    return res.status(200).json({ message: 'Video deleted successfully' });
+    return res.status(200).json({ message: "Video deleted successfully" });
   } catch (error) {
-    console.error('Error deleting video:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error("Error deleting video:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -438,13 +440,14 @@ const uploadSkillVideo = async (req, res) => {
   try {
     // This endpoint will be implemented when you add multer and cloudinary
     // For now, return a placeholder response
-    return res.status(501).json({ 
-      message: 'File upload not yet implemented. Please use URL upload instead.',
-      tip: 'You can upload videos to YouTube, Vimeo, or Google Drive and paste the link!'
+    return res.status(501).json({
+      message:
+        "File upload not yet implemented. Please use URL upload instead.",
+      tip: "You can upload videos to YouTube, Vimeo, or Google Drive and paste the link!",
     });
   } catch (error) {
-    console.error('Error uploading video:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error("Error uploading video:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -455,18 +458,24 @@ const watchVideo = async (req, res) => {
     const { videoOwnerUsername, skillName } = req.body;
 
     if (!videoOwnerUsername || !skillName) {
-      return res.status(400).json({ message: 'Video owner username and skill name are required' });
+      return res
+        .status(400)
+        .json({ message: "Video owner username and skill name are required" });
     }
 
     // Find the video owner
     const videoOwner = await User.findOne({ username: videoOwnerUsername });
     if (!videoOwner) {
-      return res.status(404).json({ message: 'Video owner not found' });
+      return res.status(404).json({ message: "Video owner not found" });
     }
 
     // Check if viewer is trying to watch their own video
     if (viewerId.equals(videoOwner._id)) {
-      return res.status(400).json({ message: 'You cannot earn tokens by watching your own videos' });
+      return res
+        .status(400)
+        .json({
+          message: "You cannot earn tokens by watching your own videos",
+        });
     }
 
     const viewer = await User.findById(viewerId);
@@ -477,10 +486,10 @@ const watchVideo = async (req, res) => {
 
     // Check if viewer has enough tokens
     if (viewer.tokens < TOKEN_COST) {
-      return res.status(403).json({ 
-        message: 'Insufficient tokens to watch this video',
+      return res.status(403).json({
+        message: "Insufficient tokens to watch this video",
         currentTokens: viewer.tokens,
-        required: TOKEN_COST
+        required: TOKEN_COST,
       });
     }
 
@@ -491,21 +500,24 @@ const watchVideo = async (req, res) => {
     videoOwner.tokens += TOKEN_REWARD;
 
     // Add notifications
-    viewer.notifications.push(`🎬 You spent ${TOKEN_COST} tokens watching ${videoOwner.username}'s ${skillName} video`);
-    videoOwner.notifications.push(`💰 You earned ${TOKEN_REWARD} tokens! ${viewer.username} watched your ${skillName} video`);
+    viewer.notifications.push(
+      `🎬 You spent ${TOKEN_COST} tokens watching ${videoOwner.username}'s ${skillName} video`
+    );
+    videoOwner.notifications.push(
+      `💰 You earned ${TOKEN_REWARD} tokens! ${viewer.username} watched your ${skillName} video`
+    );
 
     await viewer.save();
     await videoOwner.save();
 
-    return res.status(200).json({ 
-      message: 'Video view recorded successfully',
+    return res.status(200).json({
+      message: "Video view recorded successfully",
       newTokenBalance: viewer.tokens,
-      tokensSpent: TOKEN_COST
+      tokensSpent: TOKEN_COST,
     });
-
   } catch (error) {
-    console.error('Error recording video view:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error("Error recording video view:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -514,18 +526,18 @@ const getTokenBalance = async (req, res) => {
   try {
     const userId = req.user._id;
     const user = await User.findById(userId);
-    
+
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    return res.status(200).json({ 
+    return res.status(200).json({
       tokens: user.tokens || 100,
-      username: user.username
+      username: user.username,
     });
   } catch (error) {
-    console.error('Error fetching token balance:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error("Error fetching token balance:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -543,5 +555,5 @@ module.exports = {
   deleteSkillVideo,
   uploadSkillVideo,
   watchVideo,
-  getTokenBalance
+  getTokenBalance,
 };
