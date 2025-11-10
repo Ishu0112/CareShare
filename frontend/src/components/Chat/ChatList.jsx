@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "../utils/AlertProvider";
 import { useLoading } from "../utils/LoadingProvider";
+import { useUser } from "../utils/UserProvider";
 import PageHeading from "../utils/PageHeading";
 import Axios from "axios";
 import maleAvatar from "../../assets/avatar/male-default-avatar.png";
@@ -10,6 +11,7 @@ export default function ChatList() {
   const [chats, setChats] = useState([]);
   const { setAlert } = useAlert();
   const { setIsLoading } = useLoading();
+  const { userData: user } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,9 +38,9 @@ export default function ChatList() {
     fetchChats();
   }, []);
 
-  const handleChatClick = (chat, currentUserId) => {
+  const handleChatClick = (chat) => {
     // Find the other user in the chat
-    const otherUser = chat.participants.find((p) => p._id !== currentUserId);
+    const otherUser = chat.participants.find((p) => p._id !== user._id);
     if (otherUser) {
       navigate(`/chat/${otherUser._id}`);
     }
@@ -54,13 +56,16 @@ export default function ChatList() {
               chats.map((chat, index) => {
                 const lastMessage = chat.messages[chat.messages.length - 1];
                 const otherUser = chat.participants.find(
-                  (p) => p._id !== chat.currentUserId
+                  (p) => p._id !== user._id
                 );
+                const otherUserName = otherUser
+                  ? `${otherUser.fname} ${otherUser.lname}`
+                  : "Unknown User";
 
                 return (
                   <li
                     key={index}
-                    onClick={() => handleChatClick(chat, chat.currentUserId)}
+                    onClick={() => handleChatClick(chat)}
                     className="px-3 py-3 sm:py-4 cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
                   >
                     <div className="flex items-center space-x-4">
@@ -73,7 +78,7 @@ export default function ChatList() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                          {otherUser?.name || "Unknown User"}
+                          {otherUserName}
                         </p>
                         <p className="text-sm text-gray-500 truncate dark:text-gray-400">
                           {lastMessage?.content || "No messages yet"}

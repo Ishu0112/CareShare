@@ -17,7 +17,7 @@ exports.getOrCreateChat = async (req, res) => {
     // Find existing chat
     let chat = await Chat.findOne({
       participants: { $all: participants },
-    }).populate("participants", "name username email");
+    }).populate("participants", "fname lname username email");
 
     // Create new chat if it doesn't exist
     if (!chat) {
@@ -26,7 +26,7 @@ exports.getOrCreateChat = async (req, res) => {
         messages: [],
       });
       await chat.save();
-      await chat.populate("participants", "name username email");
+      await chat.populate("participants", "fname lname username email");
     }
 
     res.status(200).json(chat);
@@ -44,7 +44,7 @@ exports.getUserChats = async (req, res) => {
     const chats = await Chat.find({
       participants: userId,
     })
-      .populate("participants", "name username email")
+      .populate("participants", "fname lname username email")
       .sort({ lastMessage: -1 });
 
     res.status(200).json(chats);
@@ -64,8 +64,8 @@ exports.getChatById = async (req, res) => {
       _id: chatId,
       participants: userId,
     })
-      .populate("participants", "name username email")
-      .populate("messages.sender", "name username");
+      .populate("participants", "fname lname username email")
+      .populate("messages.sender", "fname lname username");
 
     if (!chat) {
       return res.status(404).json({ error: "Chat not found" });
