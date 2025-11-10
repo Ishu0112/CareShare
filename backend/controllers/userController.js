@@ -67,6 +67,8 @@ const login = async (req, res) => {
         matches: matchNames,
         bio: userExists.bio,
         notifications: userExists.notifications,
+        skillVideos: userExists.skillVideos ? Object.fromEntries(userExists.skillVideos) : {},
+        tokens: userExists.tokens || 100
       };
       return res.status(200).json(profile);
     } else {
@@ -166,6 +168,8 @@ const viewProfile = async (req, res) => {
       matches: matchNames,
       bio: thisUser.bio,
       notifications: thisUser.notifications,
+      skillVideos: thisUser.skillVideos ? Object.fromEntries(thisUser.skillVideos) : {},
+      tokens: thisUser.tokens || 100
     };
     res.status(200).json(profile);
   } catch (err) {
@@ -187,6 +191,7 @@ const getMatches = async (req, res) => {
         _id: match._id, // Added: Include user ID for chat functionality
         name: `${match.fname} ${match.lname}`,
         username: match.username,
+        skillVideos: match.skillVideos ? Object.fromEntries(match.skillVideos) : {}
       };
     });
     console.log(matches);
@@ -367,6 +372,163 @@ const getNotifications = async (req, res) => {
   }
 };
 
+// Save video URL for a skill
+const saveSkillVideoUrl = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { skill, videoUrl } = req.body;
+
+    if (!skill || !videoUrl) {
+      return res.status(400).json({ message: 'Skill and video URL are required' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Initialize skillVideos if it doesn't exist
+    if (!user.skillVideos) {
+      user.skillVideos = new Map();
+    }
+
+    // Add or update the video URL for the skill
+    user.skillVideos.set(skill, videoUrl);
+    await user.save();
+
+    return res.status(200).json({ 
+      message: 'Video URL saved successfully',
+      videoUrl: videoUrl
+    });
+  } catch (error) {
+    console.error('Error saving video URL:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Delete video for a skill
+const deleteSkillVideo = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { skill } = req.body;
+
+    if (!skill) {
+      return res.status(400).json({ message: 'Skill is required' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.skillVideos && user.skillVideos.has(skill)) {
+      user.skillVideos.delete(skill);
+      await user.save();
+    }
+
+    return res.status(200).json({ message: 'Video deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting video:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Upload video file endpoint (for future implementation with multer/cloudinary)
+const uploadSkillVideo = async (req, res) => {
+  try {
+    // This endpoint will be implemented when you add multer and cloudinary
+    // For now, return a placeholder response
+    return res.status(501).json({ 
+      message: 'File upload not yet implemented. Please use URL upload instead.',
+      tip: 'You can upload videos to YouTube, Vimeo, or Google Drive and paste the link!'
+    });
+  } catch (error) {
+    console.error('Error uploading video:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Watch video - deduct tokens from viewer, add tokens to video owner
+const watchVideo = async (req, res) => {
+  try {
+    const viewerId = req.user._id;
+    const { videoOwnerUsername, skillName } = req.body;
+
+    if (!videoOwnerUsername || !skillName) {
+      return res.status(400).json({ message: 'Video owner username and skill name are required' });
+    }
+
+    // Find the video owner
+    const videoOwner = await User.findOne({ username: videoOwnerUsername });
+    if (!videoOwner) {
+      return res.status(404).json({ message: 'Video owner not found' });
+    }
+
+    // Check if viewer is trying to watch their own video
+    if (viewerId.equals(videoOwner._id)) {
+      return res.status(400).json({ message: 'You cannot earn tokens by watching your own videos' });
+    }
+
+    const viewer = await User.findById(viewerId);
+
+    // Token cost per video view
+    const TOKEN_COST = 5;
+    const TOKEN_REWARD = 5;
+
+    // Check if viewer has enough tokens
+    if (viewer.tokens < TOKEN_COST) {
+      return res.status(403).json({ 
+        message: 'Insufficient tokens to watch this video',
+        currentTokens: viewer.tokens,
+        required: TOKEN_COST
+      });
+    }
+
+    // Deduct tokens from viewer
+    viewer.tokens -= TOKEN_COST;
+
+    // Add tokens to video owner
+    videoOwner.tokens += TOKEN_REWARD;
+
+    // Add notifications
+    viewer.notifications.push(`🎬 You spent ${TOKEN_COST} tokens watching ${videoOwner.username}'s ${skillName} video`);
+    videoOwner.notifications.push(`💰 You earned ${TOKEN_REWARD} tokens! ${viewer.username} watched your ${skillName} video`);
+
+    await viewer.save();
+    await videoOwner.save();
+
+    return res.status(200).json({ 
+      message: 'Video view recorded successfully',
+      newTokenBalance: viewer.tokens,
+      tokensSpent: TOKEN_COST
+    });
+
+  } catch (error) {
+    console.error('Error recording video view:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Get user's token balance
+const getTokenBalance = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json({ 
+      tokens: user.tokens || 100,
+      username: user.username
+    });
+  } catch (error) {
+    console.error('Error fetching token balance:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   registerUser,
   viewProfile,
@@ -377,4 +539,9 @@ module.exports = {
   updateUserInterests,
   logout,
   getNotifications,
+  saveSkillVideoUrl,
+  deleteSkillVideo,
+  uploadSkillVideo,
+  watchVideo,
+  getTokenBalance
 };

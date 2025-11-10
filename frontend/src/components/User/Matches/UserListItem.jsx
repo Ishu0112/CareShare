@@ -22,6 +22,10 @@ export default function UserListItem({ user }) {
     navigate(`/chat/${user._id}`);
   }
 
+  function handleClick() {
+    navigate(`/user/matches/${user.username}`);
+  }
+
   return (
     <li className="px-3 py-3 sm:py-4 cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
       <div className="flex items-center space-x-4 justify-between">

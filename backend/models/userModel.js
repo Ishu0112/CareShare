@@ -49,7 +49,16 @@ const userSchema = new mongoose.Schema({
     }],
     notifications: [{
         type: String
-    }]
+    }],
+    skillVideos: {
+        type: Map,
+        of: String,
+        default: new Map()
+    },
+    tokens: {
+        type: Number,
+        default: 100
+    }
 }, {timestamps: true})
 
 const User = mongoose.model('User', userSchema)

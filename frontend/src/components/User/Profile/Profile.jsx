@@ -8,6 +8,7 @@ import { useAlert } from '../../utils/AlertProvider'
 import SkillRow from './SkillRow'
 import PageHeading from '../../utils/PageHeading'
 import { useLoading } from '../../utils/LoadingProvider'
+import SkillVideoPlayer from '../Matches/SkillVideoPlayer'
 
 Axios.defaults.withCredentials = true
 
@@ -15,7 +16,7 @@ Axios.defaults.withCredentials = true
 export default function Profile() {
     const { userData, setUserData } = useUser()
     const navigate = useNavigate()
-    const fieldsNotToDisplay = ['notifications', 'matches']
+    const fieldsNotToDisplay = ['notifications', 'matches', 'skillVideos']
     const { alert, setAlert } = useAlert()
     const { isLoading, setIsLoading} = useLoading()
 
@@ -70,6 +71,8 @@ export default function Profile() {
         navigate('/user/profile-update')
     }
 
+    const hasVideos = userData.skillVideos && Object.keys(userData.skillVideos).length > 0;
+
     return (
         <div className="flex items-center justify-center w-full">
             
@@ -95,10 +98,33 @@ export default function Profile() {
                             })}
                         </div>
 
-                        <button onClick={handleClick} className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-lg px-7 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>✏️ EDIT</button>
+                        <button onClick={handleClick} className='text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-lg px-7 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>EDIT</button>
 
                     </div>
                 </div>
+
+                {/* User's Own Skill Videos */}
+                {hasVideos && (
+                    <div className="w-full max-w-lg border-2 border-purple-500 dark:border-purple-400 rounded-lg shadow bg-slate-200 dark:bg-gray-900 mb-5">
+                        <div className="p-10">
+                            <h2 className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-4">
+                                Your Skill Videos
+                            </h2>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                These videos are visible to your matched users!
+                            </p>
+                            <div className="space-y-4">
+                                {Object.entries(userData.skillVideos).map(([skill, videoUrl]) => (
+                                    <SkillVideoPlayer
+                                        key={skill}
+                                        skill={skill}
+                                        videoUrl={videoUrl}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>

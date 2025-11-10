@@ -7,6 +7,7 @@ import { useAlert } from '../../utils/AlertProvider'
 import SkillRow from './SkillRow'
 import PageHeading from '../../utils/PageHeading'
 import { useLoading } from '../../utils/LoadingProvider'
+import SkillVideoPlayer from '../../User/Matches/SkillVideoPlayer'
 
 Axios.defaults.withCredentials = true
 
@@ -67,6 +68,8 @@ export default function ViewProfile({ children }) {
         console.log('Updated userData:', userData);
     }, [userData])
 
+    const hasVideos = userData.skillVideos && Object.keys(userData.skillVideos).length > 0;
+
 
     return (
         <div className="flex items-center justify-center w-full">
@@ -80,7 +83,9 @@ export default function ViewProfile({ children }) {
 
                         <div className="flex flex-col items-center p-5">
                             {Object.keys(userData).map((myKey, itr) => {
-                                if (myKey === 'skills' || myKey === 'interests') {
+                                if (myKey === 'skillVideos') {
+                                    return null; // Skip rendering skillVideos as DataRow
+                                } else if (myKey === 'skills' || myKey === 'interests') {
                                     return <SkillRow key={itr} dataType={myKey} dataVal={userData[myKey]} />
                                 } else {
                                     return <DataRow key={itr} dataType={myKey} dataVal={userData[myKey]} />
@@ -90,6 +95,30 @@ export default function ViewProfile({ children }) {
 
                     </div>
                 </div>
+
+                {/* Skill Videos Section */}
+                {hasVideos && (
+                    <div className="w-full max-w-lg border-2 border-purple-500 dark:border-purple-400 rounded-lg shadow bg-slate-200 dark:bg-gray-900 mb-5">
+                        <div className="p-10">
+                            <h2 className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-4">
+                                Skill Videos
+                            </h2>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                Videos showcasing skills they can teach you!
+                            </p>
+                            <div className="space-y-4">
+                                {Object.entries(userData.skillVideos).map(([skill, videoUrl]) => (
+                                    <SkillVideoPlayer
+                                        key={skill}
+                                        skill={skill}
+                                        videoUrl={videoUrl}
+                                        videoOwnerUsername={userData.username}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>
